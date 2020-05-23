@@ -1,10 +1,10 @@
+# A container that mimicks the execution environment in AWS Lambda.
+# ! Make sure the Python version matches the Lambda's config !
 FROM lambci/lambda:build-python3.7
 
 ENV PYTHONUNBUFFERED 1
 
-#RUN python3 -m venv /venv
 ADD requirements.txt /requirements.txt
-#RUN source /venv/bin/activate &&\
 RUN pip3 install -r /requirements.txt
 
 ADD . /code
