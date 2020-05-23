@@ -23,7 +23,10 @@ You have a few options for telling the container about your AWS credentials that
 Mount your AWS credentials and config files:
 
 ```bash
-docker run -it -v ~/.aws:/root/.aws zappa_build dev
+docker run -it \
+    -v ~/.aws:/root/.aws \
+    -v $(pwd)/zbuilds:/zbuilds \
+    zappa_build dev
 ```
 
 If you needed to specify a profile to use from `/root/.aws/credentials`:
@@ -31,6 +34,7 @@ If you needed to specify a profile to use from `/root/.aws/credentials`:
 ```bash
 docker run -it \
   -v ~/.aws:/root/.aws \
+  -v $(pwd)/zbuilds:/zbuilds \
   -e AWS_PROFILE=prod \
   zappa_build dev
 ```
@@ -41,6 +45,7 @@ If you needed to use environment variables:
 
 ```bash
 docker run -it \
+  -v $(pwd)/zbuilds:/zbuilds \
   -e AWS_ACCESS_KEY_ID=foobar \
   -e AWS_SECRET_ACCESS_KEY=foobar \
   -e AWS_DEFAULT_REGION=us-east-1 \
