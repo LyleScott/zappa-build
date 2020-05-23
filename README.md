@@ -18,25 +18,31 @@ Build the app:
 docker build -t zappabuild -f zappa_build/Dockerfile .
 ```
 
-Deploy the app:
+You have a few options for telling the container about your AWS credentials that boto needs:
+
+Mount your AWS credentials and config files:
 
 ```bash
-# Mount your AWS keys so you have boto3 credentials.
 docker run -it -v ~/.aws:/root/.aws zappabuild dev
 ```
 
+If you needed to specify a profile to use from `/root/.aws/credentials`:
+
 ```bash
-# If you need to use an AWS profile:
 docker run -it \
   -v ~/.aws:/root/.aws \
   -e AWS_PROFILE=prod \
   zappabuild dev
 ```
 
+If you needed to use environment variables:
+
+> These are likely defined in your `~/.aws/credentials` file
+
 ```bash
-# You may also use environment variables if you only have AWS keys.
 docker run -it \
   -e AWS_ACCESS_KEY_ID=foobar \
   -e AWS_SECRET_ACCESS_KEY=foobar \
-  -e AWS_DEFAULT_REGION=us-east-1
+  -e AWS_DEFAULT_REGION=us-east-1 \
+  zappabuild dev
 ```
