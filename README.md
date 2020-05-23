@@ -1,2 +1,6 @@
 # zappa-builder
-build a zappa app within a a docker container that mimicks the lambda env
+
+Build a Zappa app within a docker container that mimicks the lambda env.
+
+> The work here is for a Django app, so edit to taste.
+
