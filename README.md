@@ -2,6 +2,10 @@
 
 Build a Zappa app within a docker container that mimicks the lambda env.
 
+Since the `deploy`/`update` wants you to have an active virtualenv, this build creates a new virtual env and installs only `requirements.txt` so that the resultant lambda zip is as small as possible and has only the deps defined (ie, you'll probably have dev stuff installed locally). 
+
+You'll want to do this when you are building dependencies that require C libraries. Otherwise, you run the risk of building packages in an environment (locally) very different than the execution environment (lambda).
+
 > The work here is for a Django app, so edit to taste.
 
 ## Usage
