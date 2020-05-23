@@ -9,13 +9,13 @@ Build a Zappa app within a docker container that mimicks the lambda env.
 Check out as a submodule in the root of your project:
 
 ```bash
-git submodule add https://github.com/LyleScott/zappa-builder zappa_build
+git submodule add https://github.com/LyleScott/zappa-build zappa_build
 ```
 
 Build the app:
 
 ```bash
-docker build -t zappabuild -f zappa_build/Dockerfile .
+docker build -t zappa_build -f zappa_build/Dockerfile .
 ```
 
 You have a few options for telling the container about your AWS credentials that boto needs:
@@ -23,7 +23,7 @@ You have a few options for telling the container about your AWS credentials that
 Mount your AWS credentials and config files:
 
 ```bash
-docker run -it -v ~/.aws:/root/.aws zappabuild dev
+docker run -it -v ~/.aws:/root/.aws zappa_build dev
 ```
 
 If you needed to specify a profile to use from `/root/.aws/credentials`:
@@ -32,7 +32,7 @@ If you needed to specify a profile to use from `/root/.aws/credentials`:
 docker run -it \
   -v ~/.aws:/root/.aws \
   -e AWS_PROFILE=prod \
-  zappabuild dev
+  zappa_build dev
 ```
 
 If you needed to use environment variables:
@@ -44,5 +44,5 @@ docker run -it \
   -e AWS_ACCESS_KEY_ID=foobar \
   -e AWS_SECRET_ACCESS_KEY=foobar \
   -e AWS_DEFAULT_REGION=us-east-1 \
-  zappabuild dev
+  zappa_build dev
 ```
