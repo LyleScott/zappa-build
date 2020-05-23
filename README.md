@@ -22,36 +22,33 @@ Build the app:
 docker build -t zappa_build -f zappa_build/Dockerfile .
 ```
 
-You have a few options for telling the container about your AWS credentials that boto needs:
-
-Mount your AWS credentials and config files:
+Run the app:
 
 ```bash
-docker run -it \
-    -v ~/.aws:/root/.aws \
-    -v $(pwd)/zbuilds:/zbuilds \
-    zappa_build dev
+docker run -it -v $(pwd)/zbuilds:/zbuilds zappa_build dev
 ```
 
-If you needed to specify a profile to use from `/root/.aws/credentials`:
+## Example Deploy
 
 ```bash
-docker run -it \
-  -v ~/.aws:/root/.aws \
-  -v $(pwd)/zbuilds:/zbuilds \
-  -e AWS_PROFILE=prod \
-  zappa_build dev
-```
+#!/usr/bin/env bash
 
-If you needed to use environment variables:
+EnvName=$1
 
-> These are likely defined in your `~/.aws/credentials` file
+if [[ -z ${EnvName} ]]; then
+    echo "USAGE: <env-name>"
+    exit 1
+fi
 
-```bash
-docker run -it \
-  -v $(pwd)/zbuilds:/zbuilds \
-  -e AWS_ACCESS_KEY_ID=foobar \
-  -e AWS_SECRET_ACCESS_KEY=foobar \
-  -e AWS_DEFAULT_REGION=us-east-1 \
-  zappa_build dev
+docker build -t zappa_build -f zappa_build/Dockerfile .
+docker run -it -v ~/.aws:/root/.aws -v $(pwd)/zbuilds:/zbuilds zappa_build dev
+
+pushd src
+
+#zappa deploy ${EnvName}
+zappa update ${EnvName} -z ../$(ls -tr ../zbuilds | tail -n 1)
+zappa manage ${EnvName} 'collectstatic --noinput'
+zappa manage ${EnvName} 'migrate --no-input'
+zappa schedule ${EnvName}
+zappa tail ${EnvName}
 ```

@@ -1,20 +1,19 @@
 #!/usr/bin/env bash
 set -e
 
-EnvName=$1o
+EnvName=$1
 
 if [[ -z ${EnvName} ]]; then
     echo "USAGE: <env-name>"
     exit 1
 fi
 
-source /venv/bin/activate
-
 find . -name __pycache__ | xargs rm -rf
 find . -name \*.pyc | xargs rm -f
 
 python -m compileall -q .
+source /venv/bin/activate
 
-zappa package --no_venv
-mv *-zappa-${EnvName}-*.tar.gz /zbuilds
+zappa package
+mv *-zappa-${EnvName}-*.* /zbuilds
 
