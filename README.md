@@ -28,24 +28,39 @@ Run the app:
 docker run -it -v $(pwd)/zbuilds:/zbuilds zappa_build dev
 ```
 
-## Example Deploy
+## Example Deploy Script
+
+It is easy to integration `zappa-build` into your project seemlessly.
+
+Given an example project hierarchy:
+
+```
+src/zappa_settings.json
+src/manage.py
+```
+
+You may have a script to deploy zappa like the following where a docker container does the main zappa build and lambda packaging in a Lambda-like environment and then some useful `zappa` commands are done. 
+
 
 ```bash
 #!/usr/bin/env bash
 
 set -ex
 
+S3Bucket=s3-bucket-to-store-sideload-tar.gz
+
 EnvName=$1
-S3Bucket=s3-bucket-to-store-sideload
 
 if [[ -z ${EnvName} ]]; then
     echo "USAGE: <env-name>"
     exit 1
 fi
 
+# Build zappa in a Lambda like environment and produce a .zip and .tar.gz 
 docker build -t zappa_build -f zappa_build/Dockerfile .
 docker run -it -v $(pwd)/zappa_build/_builds:/zbuilds zappa_build ${EnvName}
 
+# Head on in to the src directory containing `zappa_settings.yml`
 pushd src
 
 dot_tar_gz=$(ls -tr ../zappa_build/_builds/*.tar.gz | tail -n 1)
