@@ -1,4 +1,4 @@
-# zappa-builder
+# zappa-build
 
 Build a Zappa app within a docker container that mimicks the lambda env.
 
@@ -41,7 +41,7 @@ if [[ -z ${EnvName} ]]; then
 fi
 
 docker build -t zappa_build -f zappa_build/Dockerfile .
-docker run -it -v ~/.aws:/root/.aws -v $(pwd)/zbuilds:/zbuilds zappa_build dev
+docker run -it -v $(pwd)/zbuilds:/zbuilds zappa_build dev
 
 pushd src
 
