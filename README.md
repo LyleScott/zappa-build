@@ -33,7 +33,10 @@ docker run -it -v $(pwd)/zbuilds:/zbuilds zappa_build dev
 ```bash
 #!/usr/bin/env bash
 
+set -ex
+
 EnvName=$1
+S3Bucket=s3-bucket-to-store-sideload
 
 if [[ -z ${EnvName} ]]; then
     echo "USAGE: <env-name>"
@@ -41,14 +44,18 @@ if [[ -z ${EnvName} ]]; then
 fi
 
 docker build -t zappa_build -f zappa_build/Dockerfile .
-docker run -it -v $(pwd)/zbuilds:/zbuilds zappa_build dev
+docker run -it -v $(pwd)/zappa_build/_builds:/zbuilds zappa_build ${EnvName}
 
 pushd src
 
-#zappa deploy ${EnvName}
-zappa update ${EnvName} -z ../$(ls -tr ../zbuilds | tail -n 1)
+dot_tar_gz=$(ls -tr ../zappa_build/_builds/*.tar.gz | tail -n 1)
+dot_zip=$(ls -tr ../zappa_build/_builds/*.zip | tail -n 1)
+aws s3 cp ${dot_tar_gz} s3://${S3Bucket}/
+aws s3 cp ${dot_zip} s3://${S3Bucket}/
+if ! zappa deploy ${EnvName} -z s3://${S3Bucket}/$(basename $dot_zip); then
+    zappa update ${EnvName} -z s3://${S3Bucket}/$(basename $dot_zip)
+fi
 zappa manage ${EnvName} 'collectstatic --noinput'
 zappa manage ${EnvName} 'migrate --no-input'
-zappa schedule ${EnvName}
 zappa tail ${EnvName}
 ```
