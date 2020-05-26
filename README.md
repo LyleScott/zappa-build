@@ -30,17 +30,19 @@ docker run -it -v $(pwd)/zbuilds:/zbuilds zappa_build dev
 
 ## Example Deploy Script
 
-It is easy to integration `zappa-build` into your project seemlessly.
+It is easy to integrate `zappa-build` into your project seemlessly!
 
 Given an example project hierarchy:
 
 ```
 src/zappa_settings.json
 src/manage.py
+zappa_build/
 ```
 
-You may have a script to deploy zappa like the following where a docker container does the main zappa build and lambda packaging in a Lambda-like environment and then some useful `zappa` commands are done. 
+> `zappa_build/` is from a `git submodule add https://github.com/LyleScott/zappa-build zappa_build`
 
+You may have a script to deploy zappa like the following where a docker container does the main zappa build and lambda packaging in a Lambda-like environment and then follows up with some typical Dango post-deployment commands. 
 
 ```bash
 #!/usr/bin/env bash
