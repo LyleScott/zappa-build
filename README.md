@@ -42,40 +42,39 @@ It is easy to integrate `zappa-build` into your project seemlessly!
 Given an example project hierarchy:
 
 ```
-src/zappa_settings.json
-src/manage.py
-zappa_build/
+src/zappa_settings.json     # zappa app root is in src
+scripts/deploy.sh           # the script below
+zappa_build/                # zappa-build git submodule
 ```
 
 > `zappa_build/` is from a `git submodule add https://github.com/LyleScott/zappa-build zappa_build`
 
-You may have a script to deploy zappa like the following where a docker container does the main zappa build and lambda packaging in a Lambda-like environment and then follows up with some typical Dango post-deployment commands. 
+You may have a script to deploy zappa like the following where a docker container does the main zappa build and Lambda packaging in a Lambda-like environment and then follows up with some typical Django post-deployment commands. 
 
 ```bash
 #!/usr/bin/env bash
 
 set -ex
 
-S3Bucket=s3-bucket-to-store-sideload-tar.gz
-
 EnvName=$1
+S3Bucket="s3-bucket-to-house-zappa-deploy-files"
 
 if [[ -z ${EnvName} ]]; then
     echo "USAGE: <env-name>"
     exit 1
 fi
 
-# Build zappa in a Lambda like environment and produce a .zip and .tar.gz 
 docker build -t zappa_build -f zappa_build/Dockerfile .
 docker run -it -v $(pwd)/zappa_build/_builds:/zbuilds zappa_build ${EnvName}
 
-# Head on in to the src directory containing `zappa_settings.yml`
-pushd src
-
-dot_tar_gz=$(ls -tr ../zappa_build/_builds/*.tar.gz | tail -n 1)
-dot_zip=$(ls -tr ../zappa_build/_builds/*.zip | tail -n 1)
+# Grab the latest builds and push to S3.
+dot_tar_gz=$(ls -tr zappa_build/_builds/*.tar.gz | tail -n 1)
+dot_zip=$(ls -tr zappa_build/_builds/*.zip | tail -n 1)
 aws s3 cp ${dot_tar_gz} s3://${S3Bucket}/
 aws s3 cp ${dot_zip} s3://${S3Bucket}/
+
+# Zappa foo (directory contains zappa_settings.json)
+pushd src
 if ! zappa deploy ${EnvName} -z s3://${S3Bucket}/$(basename $dot_zip); then
     zappa update ${EnvName} -z s3://${S3Bucket}/$(basename $dot_zip)
 fi
