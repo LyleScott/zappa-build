@@ -15,7 +15,7 @@ environment differences.
 
 > The work here is for a Django app, so edit to taste.
 
-*This is expecting `slim_handler=true` in `zappa_settings.json`, but PRs welcome...*
+**This is expecting `slim_handler=true` in `zappa_settings.json`, but PRs welcome...**
 
 ## Usage
 
