@@ -23,21 +23,26 @@ Check out as a submodule in the root of your project:
 git submodule add https://github.com/LyleScott/zappa-build zappa_build
 ```
 
-Build the app:
+Build the docker container:
 
 ```bash
 docker build -t zappa_build -f zappa_build/Dockerfile .
 ```
 
-Run the app:
+Run the docker container with the right `EnvName` to produce build artifacts that will be used to update the zappa Lambda code.
 
 ```bash
 docker run -it -v $(pwd)/zbuilds:/zbuilds zappa_build dev
+# produces:
+# the actual app code that's sideloaded with `slim_handler=true`
+# zappa_build/_builds/prfoo-zappa-lyle-1590469643.tar.gz
+# the Lambda code to bootstrap with (that sideloads the actual Lambda code)
+# zappa_build/_builds/handler_prfoo-zappa-lyle-1590469760.zip
 ```
 
 ## Example Deploy Script
 
-It is easy to integrate `zappa-build` into your project seemlessly!
+It is easy to integrate `zappa-build` into your project!
 
 Given an example project hierarchy:
 
